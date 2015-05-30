@@ -5,6 +5,8 @@
 #include "draw2.h"
 #include <vector>
 #include <cstdio>
+#include <iostream>
+#include <Windows.h>
 
 #define MAX_LOADSTRING 100
 #define TMR_1 1
@@ -13,6 +15,9 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+LPSTR Bufor;
+DWORD dwRozmiar, dwPrzeczyt;
+HANDLE hPlik;
 
 INT value;
 
@@ -58,10 +63,37 @@ void repaintWindow(HWND hWnd, HDC &hdc, PAINTSTRUCT &ps, RECT *drawArea)
 
 void inputData()
 {	
-	data.push_back(Point(0, 0));
-	for (int i = 1; i < 100; i++){
-		data.push_back(Point(2*i+1, 200 * rand()/RAND_MAX));
+	hPlik = CreateFile("dataoutputRobotForwardB02.log", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
+
+	if (hPlik == INVALID_HANDLE_VALUE) {
+		MessageBox(NULL, "Nie mo?na otworzy? pliku.", "A to pech!", MB_ICONEXCLAMATION);
+		PostQuitMessage(0); // Zako?cz program
 	}
+	
+	dwRozmiar = GetFileSize(hPlik, NULL);
+	if (dwRozmiar == 0xFFFFFFFF) {
+		MessageBox(NULL, "Nieprawid?owy rozmiar pliku!", "Niedobrze...", MB_ICONEXCLAMATION);
+		PostQuitMessage(0); // Zako?cz program
+	}
+
+	Bufor = (LPSTR)GlobalAlloc(GPTR, dwRozmiar + 1);
+	if (Bufor == NULL) {
+		MessageBox(NULL, "Za ma?o pami?ci!", "Ale wiocha...", MB_ICONEXCLAMATION);
+		PostQuitMessage(0); // Zako?cz program
+	}
+
+	if (!ReadFile(hPlik, Bufor, dwRozmiar, &dwPrzeczyt, NULL)) {
+		MessageBox(NULL, "B??d czytania z pliku", "Dupa blada!", MB_ICONEXCLAMATION);
+		PostQuitMessage(0); // Zako?cz program
+	}
+	Bufor[dwRozmiar] = 0;
+	int i = 0;
+	while (SetEndOfFile == 0)
+	{
+		data.push_back(Point(i, i));
+	}
+	GlobalFree(Bufor); // Zwolnij bufor
+	CloseHandle(hPlik); // Zamknij plik
 }
 
 
@@ -183,7 +215,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hwndButton = CreateWindow(TEXT("button"),                      // The class name required is button
 		TEXT("Draw"),                  // the caption of the button
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // the styles
-		300, 60,                                  // the left and top co-ordinates
+		800, 60,                                  // the left and top co-ordinates
 		80, 50,                              // width and height
 		hWnd,                                 // parent window handle
 		(HMENU)ID_BUTTON1,                   // the ID of your button
@@ -193,7 +225,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hwndButton = CreateWindow(TEXT("button"),                      // The class name required is button
 		TEXT("DrawAll"),                  // the caption of the button
 		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // the styles
-		300, 0,                                  // the left and top co-ordinates
+		800, 0,                                  // the left and top co-ordinates
 		80, 50,                              // width and height
 		hWnd,                                 // parent window handle
 		(HMENU)ID_BUTTON2,                   // the ID of your button
@@ -204,11 +236,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	hwndButton = CreateWindow(TEXT("button"), TEXT("Timer ON"),
 		WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		300, 155, 100, 30, hWnd, (HMENU)ID_RBUTTON1, GetModuleHandle(NULL), NULL);
+		800, 155, 100, 30, hWnd, (HMENU)ID_RBUTTON1, GetModuleHandle(NULL), NULL);
 
 	hwndButton = CreateWindow(TEXT("button"), TEXT("Timer OFF"),
 		WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		300, 200, 100, 30, hWnd, (HMENU)ID_RBUTTON2, GetModuleHandle(NULL), NULL);
+		800, 200, 100, 30, hWnd, (HMENU)ID_RBUTTON2, GetModuleHandle(NULL), NULL);
 
 	OnCreate(hWnd);
 
