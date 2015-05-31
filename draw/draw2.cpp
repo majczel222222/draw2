@@ -63,27 +63,27 @@ void repaintWindow(HWND hWnd, HDC &hdc, PAINTSTRUCT &ps, RECT *drawArea)
 
 void inputData()
 {	
-	hPlik = CreateFile("dataoutputRobotForwardB02.log", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
+	hPlik = CreateFile(L"dataoutputRobotForwardB02.log", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
 
 	if (hPlik == INVALID_HANDLE_VALUE) {
-		MessageBox(NULL, "Nie mo?na otworzy? pliku.", "A to pech!", MB_ICONEXCLAMATION);
+		MessageBox(NULL, L"Nie mo?na otworzy? pliku.", L"A to pech!", MB_ICONEXCLAMATION);
 		PostQuitMessage(0); // Zako?cz program
 	}
 	
 	dwRozmiar = GetFileSize(hPlik, NULL);
 	if (dwRozmiar == 0xFFFFFFFF) {
-		MessageBox(NULL, "Nieprawid?owy rozmiar pliku!", "Niedobrze...", MB_ICONEXCLAMATION);
+		MessageBox(NULL, L"Nieprawid?owy rozmiar pliku!", L"Niedobrze...", MB_ICONEXCLAMATION);
 		PostQuitMessage(0); // Zako?cz program
 	}
 
 	Bufor = (LPSTR)GlobalAlloc(GPTR, dwRozmiar + 1);
 	if (Bufor == NULL) {
-		MessageBox(NULL, "Za ma?o pami?ci!", "Ale wiocha...", MB_ICONEXCLAMATION);
+		MessageBox(NULL, L"Za ma?o pami?ci!", L"Ale wiocha...", MB_ICONEXCLAMATION);
 		PostQuitMessage(0); // Zako?cz program
 	}
 
 	if (!ReadFile(hPlik, Bufor, dwRozmiar, &dwPrzeczyt, NULL)) {
-		MessageBox(NULL, "B??d czytania z pliku", "Dupa blada!", MB_ICONEXCLAMATION);
+		MessageBox(NULL, L"B??d czytania z pliku", L"Dupa blada!", MB_ICONEXCLAMATION);
 		PostQuitMessage(0); // Zako?cz program
 	}
 	Bufor[dwRozmiar] = 0;
