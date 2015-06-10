@@ -5,8 +5,8 @@
 #include "draw2.h"
 #include <vector>
 #include <cstdio>
-#include <iostream>
-#include <Windows.h>
+#include <fstream>
+#include <string>
 
 #define MAX_LOADSTRING 100
 #define TMR_1 1
@@ -15,20 +15,17 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
-LPSTR Bufor;
-DWORD dwRozmiar, dwPrzeczyt;
-HANDLE hPlik;
 
-INT value;
+INT value = 1;
+INT diag = 1;
 
 // buttons
 HWND hwndButton;
 
-// sent data
-int col = 0;
 std::vector<Point> data;
-RECT drawArea1 = { 0, 0, 150, 200 };
-RECT drawArea2 = { 50, 400, 650, 422};
+
+RECT drawArea1 = { 0, 151, 800, 300 };
+RECT drawArea2;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -38,16 +35,111 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	Buttons(HWND, UINT, WPARAM, LPARAM);
 
 
+
+
+void inputData()
+{
+	std::ifstream source_file;
+
+	double number;
+
+	std::string file_name = "outputRobotForwardB02.log";
+	std::string useless_data;
+
+	source_file.open(file_name.c_str());
+
+	if (source_file.fail())
+	{
+		MessageBox(NULL, L"Nie mozna otworzyæ pliku.", L"ERR", MB_ICONEXCLAMATION);
+	};
+
+	for (int j = 0; j < 2304; j++)
+	{
+		if (j == 0)
+		{
+			source_file.seekg(+22, std::ios_base::cur);
+		}
+		else
+		{
+			source_file.seekg(+21, std::ios_base::cur);
+		}
+
+		source_file >> number;
+
+		number = number * 500;
+
+		number = 150 - number;
+
+		getline(source_file, useless_data);
+
+		useless_data.clear();
+
+		data.push_back(Point(0, number));
+	}	
+
+	source_file.close();
+
+}
+
 void MyOnPaint(HDC hdc)
 {
 	Graphics graphics(hdc);
-	Pen pen(Color(255, 0, 0, 255));
-	Pen pen2(Color(255, 25*col, 0, 255));
 
-	for (int i = 1; i < 100; i++)
-		graphics.DrawLine(&pen2, data[i - 1].X, data[i - 1].Y, data[i].X, data[i].Y);
+	Pen pen(Color(255, 0, 0, 0));
+	Pen pen2(Color(255, 0, 0, 255));
 
+	Font text(&FontFamily(L"Arial"), 20);
+
+	SolidBrush text2(Color(255, 255, 0, 0));
 	graphics.DrawRectangle(&pen, 50 + value, 400, 10, 20);
+
+
+	//for (int i = 1, j = value; i < wykres; i++, j++)
+	//{
+	//	k = 2 * (value - wykres);
+	//
+	//	graphics.DrawLine(&pen2, data[i - 1].X - k, data[j - 1].Y, data[i].X - k , data[j].Y);
+	//};
+	//	graphics.DrawLine(&pen2, data[wykres - 1].X, data[value - 1].Y, data[wykres].X, data[value].Y);
+
+
+
+	graphics.DrawLine(&pen2, data[value - 1].X + 2 * diag, data[value - 1].Y, data[value].X + 2 + 2 * diag, data[value].Y);
+
+	drawArea2 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
+
+	//	for (int i = 1; i < wykres; i++)
+	//	{
+	//		graphics.DrawLine(&pen2, data[i - 1].X, data[i - 1].Y, data[i].X, data[i].Y);
+	//	};
+
+	graphics.DrawString(L"Przedzial czasowy", 17, &text, PointF(1100, 15), &text2);
+
+	graphics.DrawString(L"Amplituda", 9, &text, PointF(1150, 115), &text2);
+
+	graphics.DrawString(L"Wykres predkosci", 17, &text, PointF(1100, 215), &text2);
+
+	graphics.DrawString(L"Wykres przyspieszenia", 21, &text, PointF(1075, 315), &text2);
+
+	graphics.DrawString(L"Wykres drogi", 16, &text, PointF(1125, 415), &text2);
+
+	graphics.DrawString(L"Ilosc pominietych probek", 25, &text, PointF(1050, 515), &text2);
+
+	graphics.DrawLine(&pen, 0, 150, 401, 150);
+
+	value++;
+
+	if (value == 2304)
+	{
+		value = 1;
+	}
+
+	diag++;
+
+	if (diag == 201)
+	{
+		diag = 1;
+	}
 }
 
 void repaintWindow(HWND hWnd, HDC &hdc, PAINTSTRUCT &ps, RECT *drawArea)
@@ -59,46 +151,11 @@ void repaintWindow(HWND hWnd, HDC &hdc, PAINTSTRUCT &ps, RECT *drawArea)
 	hdc = BeginPaint(hWnd, &ps);
 	MyOnPaint(hdc);
 	EndPaint(hWnd, &ps);
-}
-
-void inputData()
-{	
-	hPlik = CreateFile("dataoutputRobotForwardB02.log", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_FLAG_RANDOM_ACCESS, NULL);
-
-	if (hPlik == INVALID_HANDLE_VALUE) {
-		MessageBox(NULL, "Nie mo?na otworzy? pliku.", "A to pech!", MB_ICONEXCLAMATION);
-		PostQuitMessage(0); // Zako?cz program
-	}
-	
-	dwRozmiar = GetFileSize(hPlik, NULL);
-	if (dwRozmiar == 0xFFFFFFFF) {
-		MessageBox(NULL, "Nieprawid?owy rozmiar pliku!", "Niedobrze...", MB_ICONEXCLAMATION);
-		PostQuitMessage(0); // Zako?cz program
-	}
-
-	Bufor = (LPSTR)GlobalAlloc(GPTR, dwRozmiar + 1);
-	if (Bufor == NULL) {
-		MessageBox(NULL, "Za ma?o pami?ci!", "Ale wiocha...", MB_ICONEXCLAMATION);
-		PostQuitMessage(0); // Zako?cz program
-	}
-
-	if (!ReadFile(hPlik, Bufor, dwRozmiar, &dwPrzeczyt, NULL)) {
-		MessageBox(NULL, "B??d czytania z pliku", "Dupa blada!", MB_ICONEXCLAMATION);
-		PostQuitMessage(0); // Zako?cz program
-	}
-	Bufor[dwRozmiar] = 0;
-	int i = 0;
-	while (SetEndOfFile == 0)
-	{
-		data.push_back(Point(i, i));
-	}
-	GlobalFree(Bufor); // Zwolnij bufor
-	CloseHandle(hPlik); // Zamknij plik
-}
-
+}	
 
 int OnCreate(HWND window)
 {
+	SetTimer(window, TMR_1, 25, 0);
 	inputData();
 	return 0;
 }
@@ -116,8 +173,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	// TODO: Place code here.
 	MSG msg;
 	HACCEL hAccelTable;
-
-	value = 0;
 
 	GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR           gdiplusToken;
@@ -203,44 +258,26 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 	HWND hWnd;
 
-
 	hInst = hInstance; // Store instance handle (of exe) in our global variable
 
 	// main window
 	hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-	// create button and store the handle                                                       
-	
-	hwndButton = CreateWindow(TEXT("button"),                      // The class name required is button
-		TEXT("Draw"),                  // the caption of the button
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // the styles
-		800, 60,                                  // the left and top co-ordinates
-		80, 50,                              // width and height
-		hWnd,                                 // parent window handle
-		(HMENU)ID_BUTTON1,                   // the ID of your button
-		hInstance,                            // the instance of your application
-		NULL);                               // extra bits you dont really need
+	hwndButton = CreateWindow(TEXT("button"), TEXT("+"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 50, 50, 50, hWnd, (HMENU)ID_BUTTON_TIMEUP, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("-"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 50, 50, 50, hWnd, (HMENU)ID_BUTTON_TIMEDOWN, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"),                      // The class name required is button
-		TEXT("DrawAll"),                  // the caption of the button
-		WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,  // the styles
-		800, 0,                                  // the left and top co-ordinates
-		80, 50,                              // width and height
-		hWnd,                                 // parent window handle
-		(HMENU)ID_BUTTON2,                   // the ID of your button
-		hInstance,                            // the instance of your application
-		NULL);                               // extra bits you dont really need
+	hwndButton = CreateWindow(TEXT("button"), TEXT("+"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 150, 50, 50, hWnd, (HMENU)ID_BUTTON_SCALEUP, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("-"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 150, 50, 50, hWnd, (HMENU)ID_BUTTON_SCALEDOWN, hInstance, NULL);
 
-	// create button and store the handle                                                       
+	hwndButton = CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 250, 50, 50, hWnd, (HMENU)ID_BUTTON_VON, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 250, 50, 50, hWnd, (HMENU)ID_BUTTON_VOFF, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Timer ON"),
-		WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		800, 155, 100, 30, hWnd, (HMENU)ID_RBUTTON1, GetModuleHandle(NULL), NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 350, 50, 50, hWnd, (HMENU)ID_BUTTON_AON, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 350, 50, 50, hWnd, (HMENU)ID_BUTTON_AOFF, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Timer OFF"),
-		WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		800, 200, 100, 30, hWnd, (HMENU)ID_RBUTTON2, GetModuleHandle(NULL), NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 450, 50, 50, hWnd, (HMENU)ID_BUTTON_SON, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 450, 50, 50, hWnd, (HMENU)ID_BUTTON_SOFF, hInstance, NULL);
 
 	OnCreate(hWnd);
 
@@ -287,20 +324,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
-		case ID_BUTTON1 :
-			col++;
-			if (col > 10)
-				col = 0;
-			repaintWindow(hWnd, hdc, ps, &drawArea1);
+		case ID_BUTTON_TIMEUP:
 			break;
-		case ID_BUTTON2 :
-			repaintWindow(hWnd, hdc, ps, NULL);
+		case ID_BUTTON_TIMEDOWN:
 			break;
-		case ID_RBUTTON1:
-			SetTimer(hWnd, TMR_1, 25, 0);
+		case ID_BUTTON_SCALEUP:
 			break;
-		case ID_RBUTTON2:
-			KillTimer(hWnd, TMR_1);
+		case ID_BUTTON_SCALEDOWN:
+			break;
+		case ID_BUTTON_VON:
+			break;
+		case ID_BUTTON_VOFF:
+			break;
+		case ID_BUTTON_AON:
+			break;
+		case ID_BUTTON_AOFF:
+			break;
+		case ID_BUTTON_SON:
+			break;
+		case ID_BUTTON_SOFF:
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -308,7 +350,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here (not depend on timer, buttons)
+		MyOnPaint(hdc);
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
@@ -321,7 +363,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case TMR_1:
 			//force window to repaint
 			repaintWindow(hWnd, hdc, ps, &drawArea2);
-			value++;
 			break;
 		}
 
