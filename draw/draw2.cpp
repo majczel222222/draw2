@@ -55,7 +55,7 @@ void inputData()
 
 	if (source_file.fail())
 	{
-		MessageBox(NULL, L"Nie mozna otworzyæ pliku.", L"ERR", MB_ICONEXCLAMATION);
+		MessageBox(NULL, L"Nie mozna otworzyc pliku.", L"ERR", MB_ICONEXCLAMATION);
 	};
 
 	for (int j = 0; j < 2304; j++)
