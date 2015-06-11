@@ -22,7 +22,9 @@ INT diag = 1;
 // buttons
 HWND hwndButton;
 
-std::vector<Point> data;
+std::vector<Point> data_X;
+std::vector<Point> data_Y;
+std::vector<Point> data_Z;
 
 RECT drawArea1 = { 0, 151, 800, 300 };
 RECT drawArea2;
@@ -45,7 +47,9 @@ void inputData()
 	double number;
 
 	std::string file_name = "outputRobotForwardB02.log";
-	std::string useless_data;
+	std::string useless_data_X;
+	std::string useless_data_Y;
+	std::string useless_data_Z;
 
 	source_file.open(file_name.c_str());
 
@@ -71,12 +75,61 @@ void inputData()
 
 		number = 150 - number;
 
-		getline(source_file, useless_data);
+		getline(source_file, useless_data_X);
 
-		useless_data.clear();
+		useless_data_X.clear();
 
-		data.push_back(Point(0, number));
+		data_X.push_back(Point(0, number));
 	}	
+
+
+	for (int j = 0; j < 2304; j++)
+	{
+		if (j == 0)
+		{
+			source_file.seekg(+29, std::ios_base::cur);
+		}
+		else
+		{
+			source_file.seekg(+28, std::ios_base::cur);
+		}
+
+		source_file >> number;
+
+		number = number * 500;
+
+		number = 150 - number;
+
+		getline(source_file, useless_data_Y);
+
+		useless_data_Y.clear();
+
+		data_Y.push_back(Point(0, number));
+	}
+
+	for (int j = 0; j < 2304; j++)
+	{
+		if (j == 0)
+		{
+			source_file.seekg(+36, std::ios_base::cur);
+		}
+		else
+		{
+			source_file.seekg(+35, std::ios_base::cur);
+		}
+
+		source_file >> number;
+
+		number = number * 500;
+
+		number = 150 - number;
+
+		getline(source_file, useless_data_Z);
+
+		useless_data_Z.clear();
+
+		data_Z.push_back(Point(0, number));
+	}
 
 	source_file.close();
 
@@ -105,11 +158,10 @@ void MyOnPaint(HDC hdc)
 
 
 
-	graphics.DrawLine(&pen2, data[value - 1].X + 2 * diag, data[value - 1].Y, data[value].X + 2 + 2 * diag, data[value].Y);
+	graphics.DrawLine(&pen2, data_X[value - 1].X + 2 * diag, data_X[value - 1].Y, data_X[value].X + 2 + 2 * diag, data_X[value].Y);
 
 	drawArea2 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
 
-	graphics.DrawLine(&pen2, data[value - 1].X + 4 * diag, data[value - 1].Y, data[value].X + 2 + 4 * diag, data[value].Y);
 
 	//	for (int i = 1; i < wykres; i++)
 	//	{
