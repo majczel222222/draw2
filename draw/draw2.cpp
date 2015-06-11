@@ -26,6 +26,7 @@ std::vector<Point> data;
 
 RECT drawArea1 = { 0, 151, 800, 300 };
 RECT drawArea2;
+RECT drawArea3;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -86,12 +87,12 @@ void MyOnPaint(HDC hdc)
 	Graphics graphics(hdc);
 
 	Pen pen(Color(255, 0, 0, 0));
-	Pen pen2(Color(255, 0, 0, 255));
+	Pen pen2(Color(255, 0, 255, 0));
 
 	Font text(&FontFamily(L"Arial"), 20);
 
-	SolidBrush text2(Color(255, 255, 0, 0));
-	graphics.DrawRectangle(&pen, 50 + value, 400, 10, 20);
+	SolidBrush text2(Color(255, 0, 0, 255));
+	//graphics.DrawRectangle(&pen, 50 + value, 400, 10, 20);
 
 
 	//for (int i = 1, j = value; i < wykres; i++, j++)
@@ -108,24 +109,25 @@ void MyOnPaint(HDC hdc)
 
 	drawArea2 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
 
+	graphics.DrawLine(&pen2, data[value - 1].X + 4 * diag, data[value - 1].Y, data[value].X + 2 + 4 * diag, data[value].Y);
+
 	//	for (int i = 1; i < wykres; i++)
 	//	{
 	//		graphics.DrawLine(&pen2, data[i - 1].X, data[i - 1].Y, data[i].X, data[i].Y);
 	//	};
 
-	graphics.DrawString(L"Przedzial czasowy", 17, &text, PointF(1100, 15), &text2);
+	graphics.DrawString(L"Podzialka czasowa: ", -1, &text, PointF(900, 60), &text2);
 
-	graphics.DrawString(L"Amplituda", 9, &text, PointF(1150, 115), &text2);
+	graphics.DrawString(L"Amplituda : ", -1, &text, PointF(900, 160), &text2);
 
-	graphics.DrawString(L"Wykres predkosci", 17, &text, PointF(1100, 215), &text2);
+	graphics.DrawString(L"Sygnal z osi X: ", -1, &text, PointF(900, 260), &text2);
 
-	graphics.DrawString(L"Wykres przyspieszenia", 21, &text, PointF(1075, 315), &text2);
+	graphics.DrawString(L"Sygnal z osi Y: ", -1, &text, PointF(900, 360), &text2);
 
-	graphics.DrawString(L"Wykres drogi", 16, &text, PointF(1125, 415), &text2);
+	graphics.DrawString(L"Sygnal z osi Z: ", -1, &text, PointF(900, 460), &text2);
 
-	graphics.DrawString(L"Ilosc pominietych probek", 25, &text, PointF(1050, 515), &text2);
 
-	graphics.DrawLine(&pen, 0, 150, 401, 150);
+	//graphics.DrawLine(&pen, 0, 150, 401, 150);
 
 	value++;
 
@@ -264,20 +266,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("+"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 50, 50, 50, hWnd, (HMENU)ID_BUTTON_TIMEUP, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("-"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 50, 50, 50, hWnd, (HMENU)ID_BUTTON_TIMEDOWN, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zwieksz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1170, 40, 70, 40, hWnd, (HMENU)ID_BUTTON_TIMEUP, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zmniejsz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1170, 80, 70, 40, hWnd, (HMENU)ID_BUTTON_TIMEDOWN, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("+"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 150, 50, 50, hWnd, (HMENU)ID_BUTTON_SCALEUP, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("-"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 150, 50, 50, hWnd, (HMENU)ID_BUTTON_SCALEDOWN, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zwieksz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1070, 140, 70, 40, hWnd, (HMENU)ID_BUTTON_SCALEUP, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zmniejsz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1070, 180, 70, 40, hWnd, (HMENU)ID_BUTTON_SCALEDOWN, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 250, 50, 50, hWnd, (HMENU)ID_BUTTON_VON, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 250, 50, 50, hWnd, (HMENU)ID_BUTTON_VOFF, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 240, 70, 40, hWnd, (HMENU)ID_BUTTON_VON, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 280, 70, 40, hWnd, (HMENU)ID_BUTTON_VOFF, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 350, 50, 50, hWnd, (HMENU)ID_BUTTON_AON, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 350, 50, 50, hWnd, (HMENU)ID_BUTTON_AOFF, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 340, 70, 40, hWnd, (HMENU)ID_BUTTON_AON, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 380, 70, 40, hWnd, (HMENU)ID_BUTTON_AOFF, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("ON"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1175, 450, 50, 50, hWnd, (HMENU)ID_BUTTON_SON, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("OFF"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1225, 450, 50, 50, hWnd, (HMENU)ID_BUTTON_SOFF, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 440, 70, 40, hWnd, (HMENU)ID_BUTTON_SON, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 480, 70, 40, hWnd, (HMENU)ID_BUTTON_SOFF, hInstance, NULL);
 
 	OnCreate(hWnd);
 
