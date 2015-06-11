@@ -29,6 +29,7 @@ std::vector<Point> data_Z;
 RECT drawArea1 = { 0, 151, 800, 300 };
 RECT drawArea2;
 RECT drawArea3;
+RECT drawArea4;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -161,6 +162,14 @@ void MyOnPaint(HDC hdc)
 	graphics.DrawLine(&pen2, data_X[value - 1].X + 2 * diag, data_X[value - 1].Y, data_X[value].X + 2 + 2 * diag, data_X[value].Y);
 
 	drawArea2 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
+
+	graphics.DrawLine(&pen2, data_Y[value - 1].X + 2 * diag, data_Y[value - 1].Y, data_Y[value].X + 2 + 2 * diag, data_Y[value].Y);
+
+	drawArea3 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
+
+	graphics.DrawLine(&pen2, data_Z[value - 1].X + 2 * diag, data_Z[value - 1].Y, data_X[value].X + 2 + 2 * diag, data_Z[value].Y);
+
+	drawArea4 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
 
 
 	//	for (int i = 1; i < wykres; i++)
