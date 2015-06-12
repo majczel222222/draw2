@@ -17,7 +17,7 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 INT value;
-INT skala = 20;
+INT skala = 10;
 
 bool rysujx = false, rysujy = false, rysujz = false;
 
@@ -29,7 +29,7 @@ std::vector<int> data_y;
 std::vector<int> data_z;
 
 RECT drawArea1 = { 0, 0, 1400, 900 };
-RECT drawArea2 = { 50, 400, 650, 422 };
+RECT drawArea2;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -93,9 +93,10 @@ void MyOnPaint(HDC hdc)
 {
 	Graphics graphics(hdc);
 
-	Pen pen_1(Color(255, 255, 0, 0), 4);
-	Pen pen_2(Color(255, 0, 255, 0), 4);
-	Pen pen_3(Color(255, 0, 0, 255), 4);
+	Pen pen(Color(255, 0, 0, 0), 1);
+	Pen pen_1(Color(255, 255, 0, 0), 1);
+	Pen pen_2(Color(255, 0, 255, 0), 1);
+	Pen pen_3(Color(255, 0, 0, 255), 1);
 
 	Font text(&FontFamily(L"Arial"), 20);
 
@@ -111,14 +112,16 @@ void MyOnPaint(HDC hdc)
 	//};
 	//	graphics.DrawLine(&pen2, data[wykres - 1].X, data[value - 1].Y, data[wykres].X, data[value].Y);
 
-
+	graphics.DrawLine(&pen, 0, 280, 2304, 280);
+	graphics.DrawLine(&pen, 0, 380, 2304, 380);
+	graphics.DrawLine(&pen, 0, 480, 2304, 480);
 
 	for (int i = 1; i < 2304; i++)
 	{
 
-		if (rysujx) graphics.DrawLine(&pen_1, i - 1, 500 - data_x[i - 1] / skala, i, 500 - data_x[i] / skala);
-		if (rysujy) graphics.DrawLine(&pen_2, i - 1, 500 - data_y[i - 1] / skala, i, 500 - data_y[i] / skala);
-		if (rysujz) graphics.DrawLine(&pen_3, i - 1, 500 - data_z[i - 1] / skala, i, 500 - data_z[i] / skala);
+		if (rysujx) graphics.DrawLine(&pen_1, i - 1, 280 - data_x[i - 1] / skala, i, 280 - data_x[i] / skala);
+		if (rysujy) graphics.DrawLine(&pen_2, i - 1, 316 - data_y[i - 1] / skala, i, 316 - data_y[i] / skala);
+		if (rysujz) graphics.DrawLine(&pen_3, i - 1, 404 - data_z[i - 1] / skala, i, 404 - data_z[i] / skala);
 	}
 
 
@@ -329,7 +332,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_BUTTON_Podzialka_minus:
 			break;
 		case ID_BUTTON_Amplituda_plus:
-			while(skala>0)skala--; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			skala--;  repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Amplituda_minus:
 			skala++; repaintWindow(hWnd, hdc, ps, &drawArea1);
