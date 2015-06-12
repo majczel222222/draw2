@@ -16,20 +16,20 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
-INT value = 1;
-INT diag = 1;
+INT value;
+INT skala = 20;
+
+bool rysujx = false, rysujy = false, rysujz = false;
 
 // buttons
 HWND hwndButton;
 
-std::vector<Point> data_X;
-std::vector<Point> data_Y;
-std::vector<Point> data_Z;
+std::vector<int> data_x;
+std::vector<int> data_y;
+std::vector<int> data_z;
 
-RECT drawArea1 = { 0, 151, 800, 300 };
-RECT drawArea2;
-RECT drawArea3;
-RECT drawArea4;
+RECT drawArea1 = { 0, 0, 1400, 900 };
+RECT drawArea2 = { 50, 400, 650, 422 };
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -45,12 +45,10 @@ void inputData()
 {
 	std::ifstream source_file;
 
-	double number;
+	double a_x,a_y,a_z;
 
 	std::string file_name = "outputRobotForwardB02.log";
-	std::string useless_data_X;
-	std::string useless_data_Y;
-	std::string useless_data_Z;
+	std::string useless_data;
 
 	source_file.open(file_name.c_str());
 
@@ -70,67 +68,22 @@ void inputData()
 			source_file.seekg(+21, std::ios_base::cur);
 		}
 
-		source_file >> number;
+		source_file >> a_x >> a_y >> a_z;
 
-		number = number * 500;
+		a_x = a_x * 1000;
+		a_y = a_y * 1000;
+		a_z = a_z * 1000;
 
-		number = 150 - number;
+		getline(source_file, useless_data);
 
-		getline(source_file, useless_data_X);
+		useless_data.clear();
 
-		useless_data_X.clear();
+		data_x.push_back(a_x);
+		data_y.push_back(a_y);
+		data_z.push_back(a_z);
 
-		data_X.push_back(Point(0, number));
 	}	
 
-
-	for (int j = 0; j < 2304; j++)
-	{
-		if (j == 0)
-		{
-			source_file.seekg(+29, std::ios_base::cur);
-		}
-		else
-		{
-			source_file.seekg(+28, std::ios_base::cur);
-		}
-
-		source_file >> number;
-
-		number = number * 500;
-
-		number = 150 - number;
-
-		getline(source_file, useless_data_Y);
-
-		useless_data_Y.clear();
-
-		data_Y.push_back(Point(0, number));
-	}
-
-	for (int j = 0; j < 2304; j++)
-	{
-		if (j == 0)
-		{
-			source_file.seekg(+36, std::ios_base::cur);
-		}
-		else
-		{
-			source_file.seekg(+35, std::ios_base::cur);
-		}
-
-		source_file >> number;
-
-		number = number * 500;
-
-		number = 150 - number;
-
-		getline(source_file, useless_data_Z);
-
-		useless_data_Z.clear();
-
-		data_Z.push_back(Point(0, number));
-	}
 
 	source_file.close();
 
@@ -140,8 +93,9 @@ void MyOnPaint(HDC hdc)
 {
 	Graphics graphics(hdc);
 
-	Pen pen(Color(255, 0, 0, 0));
-	Pen pen2(Color(255, 0, 255, 0));
+	Pen pen_1(Color(255, 255, 0, 0), 4);
+	Pen pen_2(Color(255, 0, 255, 0), 4);
+	Pen pen_3(Color(255, 0, 0, 255), 4);
 
 	Font text(&FontFamily(L"Arial"), 20);
 
@@ -159,17 +113,13 @@ void MyOnPaint(HDC hdc)
 
 
 
-	graphics.DrawLine(&pen2, data_X[value - 1].X + 2 * diag, data_X[value - 1].Y, data_X[value].X + 2 + 2 * diag, data_X[value].Y);
+	for (int i = 1; i < 2304; i++)
+	{
 
-	drawArea2 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
-
-	graphics.DrawLine(&pen2, data_Y[value - 1].X + 2 * diag, data_Y[value - 1].Y, data_Y[value].X + 2 + 2 * diag, data_Y[value].Y);
-
-	drawArea3 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
-
-	graphics.DrawLine(&pen2, data_Z[value - 1].X + 2 * diag, data_Z[value - 1].Y, data_X[value].X + 2 + 2 * diag, data_Z[value].Y);
-
-	drawArea4 = { 2 * diag + 2, 0, 4 + 2 * diag, 300 };
+		if (rysujx) graphics.DrawLine(&pen_1, i - 1, 500 - data_x[i - 1] / skala, i, 500 - data_x[i] / skala);
+		if (rysujy) graphics.DrawLine(&pen_2, i - 1, 500 - data_y[i - 1] / skala, i, 500 - data_y[i] / skala);
+		if (rysujz) graphics.DrawLine(&pen_3, i - 1, 500 - data_z[i - 1] / skala, i, 500 - data_z[i] / skala);
+	}
 
 
 	//	for (int i = 1; i < wykres; i++)
@@ -190,19 +140,6 @@ void MyOnPaint(HDC hdc)
 
 	//graphics.DrawLine(&pen, 0, 150, 401, 150);
 
-	value++;
-
-	if (value == 2304)
-	{
-		value = 1;
-	}
-
-	diag++;
-
-	if (diag == 201)
-	{
-		diag = 1;
-	}
 }
 
 void repaintWindow(HWND hWnd, HDC &hdc, PAINTSTRUCT &ps, RECT *drawArea)
@@ -327,20 +264,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Zwieksz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1170, 40, 70, 40, hWnd, (HMENU)ID_BUTTON_TIMEUP, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Zmniejsz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1170, 80, 70, 40, hWnd, (HMENU)ID_BUTTON_TIMEDOWN, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zwieksz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1170, 40, 70, 40, hWnd, (HMENU)ID_BUTTON_Podzialka_plus, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zmniejsz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1170, 80, 70, 40, hWnd, (HMENU)ID_BUTTON_Podzialka_minus, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Zwieksz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1070, 140, 70, 40, hWnd, (HMENU)ID_BUTTON_SCALEUP, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Zmniejsz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1070, 180, 70, 40, hWnd, (HMENU)ID_BUTTON_SCALEDOWN, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zwieksz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1070, 140, 70, 40, hWnd, (HMENU)ID_BUTTON_Amplituda_plus , hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Zmniejsz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1070, 180, 70, 40, hWnd, (HMENU)ID_BUTTON_Amplituda_minus , hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 240, 70, 40, hWnd, (HMENU)ID_BUTTON_VON, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 280, 70, 40, hWnd, (HMENU)ID_BUTTON_VOFF, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 240, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_x_wlacz, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 280, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_x_wylacz, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 340, 70, 40, hWnd, (HMENU)ID_BUTTON_AON, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 380, 70, 40, hWnd, (HMENU)ID_BUTTON_AOFF, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 340, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_y_wlacz, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 380, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_y_wylacz, hInstance, NULL);
 
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 440, 70, 40, hWnd, (HMENU)ID_BUTTON_SON, hInstance, NULL);
-	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 480, 70, 40, hWnd, (HMENU)ID_BUTTON_SOFF, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 440, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_z_wlacz, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 480, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_z_wylacz, hInstance, NULL);
 
 	OnCreate(hWnd);
 
@@ -387,25 +324,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
-		case ID_BUTTON_TIMEUP:
+		case ID_BUTTON_Podzialka_plus:
 			break;
-		case ID_BUTTON_TIMEDOWN:
+		case ID_BUTTON_Podzialka_minus:
 			break;
-		case ID_BUTTON_SCALEUP:
+		case ID_BUTTON_Amplituda_plus:
+			while(skala>0)skala--; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
-		case ID_BUTTON_SCALEDOWN:
+		case ID_BUTTON_Amplituda_minus:
+			skala++; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
-		case ID_BUTTON_VON:
+		case ID_BUTTON_Os_x_wlacz:
+			rysujx = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
-		case ID_BUTTON_VOFF:
+		case ID_BUTTON_Os_x_wylacz:
+			rysujx = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
-		case ID_BUTTON_AON:
+		case ID_BUTTON_Os_y_wlacz:
+			rysujy = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
-		case ID_BUTTON_AOFF:
+		case ID_BUTTON_Os_y_wylacz:
+			rysujy = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
-		case ID_BUTTON_SON:
+		case ID_BUTTON_Os_z_wlacz:
+			rysujz = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
-		case ID_BUTTON_SOFF:
+		case ID_BUTTON_Os_z_wylacz:
+			rysujz = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);

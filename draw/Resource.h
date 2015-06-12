@@ -18,17 +18,17 @@
 #define IDC_STATIC				-1
 #endif
 // Values for other objects (eg. buttons)
-#define ID_BUTTON_TIMEUP		200
-#define ID_BUTTON_TIMEDOWN		201
-#define ID_BUTTON_SCALEUP		202
-#define ID_BUTTON_SCALEDOWN		203
-#define ID_BUTTON_SUWAK			204
-#define ID_BUTTON_VON			205
-#define ID_BUTTON_VOFF			206
-#define ID_BUTTON_AON			207
-#define ID_BUTTON_AOFF			208
-#define ID_BUTTON_SON			209
-#define ID_BUTTON_SOFF			210
+#define ID_BUTTON_Amplituda_plus		260
+#define ID_BUTTON_Amplituda_minus		261
+#define ID_BUTTON_Podzialka_plus		262
+#define ID_BUTTON_Podzialka_minus		263
+#define ID_BUTTON_Os_x_wlacz		264
+#define ID_BUTTON_Os_x_wylacz		265
+#define ID_BUTTON_Os_y_wlacz		266
+#define ID_BUTTON_Os_y_wylacz		267
+#define ID_BUTTON_Os_z_wlacz		268
+#define ID_BUTTON_Os_z_wylacz		269
+#define ID_BUTTON_SOFF			270
 
 // Next default values for new objects
 //
