@@ -73,10 +73,10 @@ void inputData()
 
 		source_file >> a_x >> a_y >> a_z;
 
-		a_x = a_x * 1000;
-		a_y = a_y * 1000;
-		a_z = a_z * 1000;
-		g = sqrt(((a_x)*(a_x)) + (a_y)*(a_y)) + ((a_z)*(a_z));
+		a_x = a_x ;
+		a_y = a_y ;
+		a_z = a_z;
+		g = sqrt((a_x)*(a_x)+(a_y)*(a_y)+(a_z)*(a_z));
 
 		getline(source_file, useless_data);
 
@@ -118,18 +118,18 @@ void MyOnPaint(HDC hdc)
 	//};
 	//	graphics.DrawLine(&pen2, data[wykres - 1].X, data[value - 1].Y, data[wykres].X, data[value].Y);
 
-	graphics.DrawLine(&pen, 0, 280, 2304, 280);
-	graphics.DrawLine(&pen, 0, 380, 2304, 380);
-	graphics.DrawLine(&pen, 0, 480, 2304, 480);
-	graphics.DrawLine(&pen, 0, 580, 2304, 580);
+	graphics.DrawLine(&pen, 0, 280, 768, 280);
+	graphics.DrawLine(&pen, 0, 380, 768, 380);
+	graphics.DrawLine(&pen, 0, 480, 768, 480);
+	graphics.DrawLine(&pen, 0, 580, 768, 580);
 
-	for (int i = 1; i < 2304; i++)
+	for (int i = 1; i < 2300; i++)
 	{
 
-		if (rysujx) graphics.DrawLine(&pen_1, (i - 1) / skalax, 280 - (data_x[i - 1] / skalay), i / skalax, 280 - (data_x[i] / skalay));
-		if (rysujy) graphics.DrawLine(&pen_2, (i - 1) / skalax, 316 - (data_y[i - 1] / skalay), i / skalax, 316 - (data_y[i] / skalay));
-		if (rysujz) graphics.DrawLine(&pen_3, (i - 1) / skalax, 404 - (data_z[i - 1] / skalay), i / skalax, 404 - (data_z[i] / skalay));
-		if (rysujg) graphics.DrawLine(&pen_4, (i - 1) / skalax, 504 - (data_g[i - 1] / skalay), i / skalax, 504 - (data_g[i] / skalay));
+		if (rysujx) graphics.DrawLine(&pen_1, (i - 1) / skalax, 280 + (data_x[i - 1] / skalay), i / skalax, 280 + (data_x[i] / skalay));
+		if (rysujy) graphics.DrawLine(&pen_2, (i - 1) / skalax, 380 + (data_y[i - 1] / skalay), i / skalax, 380 + (data_y[i] / skalay));
+		if (rysujz) graphics.DrawLine(&pen_3, (i - 1) / skalax, 480 + (data_z[i - 1] / skalay), i / skalax, 480 + (data_z[i] / skalay));
+		if (rysujg) graphics.DrawLine(&pen_4, (i - 1) / skalax, 580 + (data_g[i - 1] / skalay), i / skalax, 580 + (data_g[i] / skalay));
 	}
 
 
