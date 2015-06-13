@@ -28,6 +28,8 @@
 #define ID_BUTTON_Os_y_wylacz		267
 #define ID_BUTTON_Os_z_wlacz		268
 #define ID_BUTTON_Os_z_wylacz		269
+#define ID_BUTTON_G_wlacz           271
+#define ID_BUTTON_G_wylacz          272
 #define ID_BUTTON_SOFF			270
 
 // Next default values for new objects

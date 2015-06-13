@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <fstream>
 #include <string>
+#include <math.h>
 
 #define MAX_LOADSTRING 100
 #define TMR_1 1
@@ -19,7 +20,7 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 INT value;
 INT skala = 10;
 
-bool rysujx = false, rysujy = false, rysujz = false;
+bool rysujx = false, rysujy = false, rysujz = false, rysujg = false;
 
 // buttons
 HWND hwndButton;
@@ -27,6 +28,7 @@ HWND hwndButton;
 std::vector<int> data_x;
 std::vector<int> data_y;
 std::vector<int> data_z;
+std::vector<int> data_g;
 
 RECT drawArea1 = { 0, 0, 1400, 900 };
 RECT drawArea2;
@@ -45,7 +47,7 @@ void inputData()
 {
 	std::ifstream source_file;
 
-	double a_x,a_y,a_z;
+	double a_x, a_y, a_z, g;
 
 	std::string file_name = "outputRobotForwardB02.log";
 	std::string useless_data;
@@ -73,6 +75,7 @@ void inputData()
 		a_x = a_x * 1000;
 		a_y = a_y * 1000;
 		a_z = a_z * 1000;
+		g = sqrt(((a_x)*(a_x)) + (a_y)*(a_y)) + ((a_z)*(a_z));
 
 		getline(source_file, useless_data);
 
@@ -81,6 +84,7 @@ void inputData()
 		data_x.push_back(a_x);
 		data_y.push_back(a_y);
 		data_z.push_back(a_z);
+		data_g.push_back(g);
 
 	}	
 
@@ -97,6 +101,7 @@ void MyOnPaint(HDC hdc)
 	Pen pen_1(Color(255, 255, 0, 0), 1);
 	Pen pen_2(Color(255, 0, 255, 0), 1);
 	Pen pen_3(Color(255, 0, 0, 255), 1);
+	Pen pen_4(Color(255, 255, 0, 255), 1);
 
 	Font text(&FontFamily(L"Arial"), 20);
 
@@ -115,6 +120,7 @@ void MyOnPaint(HDC hdc)
 	graphics.DrawLine(&pen, 0, 280, 2304, 280);
 	graphics.DrawLine(&pen, 0, 380, 2304, 380);
 	graphics.DrawLine(&pen, 0, 480, 2304, 480);
+	graphics.DrawLine(&pen, 0, 580, 2304, 580);
 
 	for (int i = 1; i < 2304; i++)
 	{
@@ -122,6 +128,7 @@ void MyOnPaint(HDC hdc)
 		if (rysujx) graphics.DrawLine(&pen_1, i - 1, 280 - data_x[i - 1] / skala, i, 280 - data_x[i] / skala);
 		if (rysujy) graphics.DrawLine(&pen_2, i - 1, 316 - data_y[i - 1] / skala, i, 316 - data_y[i] / skala);
 		if (rysujz) graphics.DrawLine(&pen_3, i - 1, 404 - data_z[i - 1] / skala, i, 404 - data_z[i] / skala);
+		if (rysujg) graphics.DrawLine(&pen_4, i - 1, 504 - data_g[i - 1] / skala, i, 504 - data_g[i] / skala);
 	}
 
 
@@ -139,6 +146,8 @@ void MyOnPaint(HDC hdc)
 	graphics.DrawString(L"Sygnal z osi Y: ", -1, &text, PointF(900, 360), &text2);
 
 	graphics.DrawString(L"Sygnal z osi Z: ", -1, &text, PointF(900, 460), &text2);
+
+	graphics.DrawString(L"G: ", -1, &text, PointF(900, 560), &text2);
 
 
 	//graphics.DrawLine(&pen, 0, 150, 401, 150);
@@ -282,6 +291,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 440, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_z_wlacz, hInstance, NULL);
 	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 480, 70, 40, hWnd, (HMENU)ID_BUTTON_Os_z_wylacz, hInstance, NULL);
 
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wlacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 540, 70, 40, hWnd, (HMENU)ID_BUTTON_G_wlacz, hInstance, NULL);
+	hwndButton = CreateWindow(TEXT("button"), TEXT("Wylacz"), WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 1100, 580, 70, 40, hWnd, (HMENU)ID_BUTTON_G_wylacz, hInstance, NULL);
+
 	OnCreate(hWnd);
 
 	if (!hWnd)
@@ -353,6 +365,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			rysujz = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_z_wylacz:
+			rysujz = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			break;
+		case ID_BUTTON_G_wlacz:
+			rysujz = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			break;
+		case ID_BUTTON_G_wylacz:
 			rysujz = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		default:
