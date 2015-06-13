@@ -18,7 +18,8 @@ TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 INT value;
-INT skala = 10;
+INT skalay = 10;
+INT skalax = 3;
 
 bool rysujx = false, rysujy = false, rysujz = false, rysujg = false;
 
@@ -125,10 +126,10 @@ void MyOnPaint(HDC hdc)
 	for (int i = 1; i < 2304; i++)
 	{
 
-		if (rysujx) graphics.DrawLine(&pen_1, i - 1, 280 - data_x[i - 1] / skala, i, 280 - data_x[i] / skala);
-		if (rysujy) graphics.DrawLine(&pen_2, i - 1, 316 - data_y[i - 1] / skala, i, 316 - data_y[i] / skala);
-		if (rysujz) graphics.DrawLine(&pen_3, i - 1, 404 - data_z[i - 1] / skala, i, 404 - data_z[i] / skala);
-		if (rysujg) graphics.DrawLine(&pen_4, i - 1, 504 - data_g[i - 1] / skala, i, 504 - data_g[i] / skala);
+		if (rysujx) graphics.DrawLine(&pen_1, (i - 1) / skalax, 280 - data_x[i - 1] / skalay, i / skalax, 280 - data_x[i] / skalay);
+		if (rysujy) graphics.DrawLine(&pen_2, (i - 1) / skalax, 316 - data_y[i - 1] / skalay, i / skalax, 316 - data_y[i] / skalay);
+		if (rysujz) graphics.DrawLine(&pen_3, (i - 1) / skalax, 404 - data_z[i - 1] / skalay, i / skalax, 404 - data_z[i] / skalay);
+		if (rysujg) graphics.DrawLine(&pen_4, (i - 1) / skalax, 504 - data_g[i - 1] / skalay, i / skalax, 504 - data_g[i] / skalay);
 	}
 
 
@@ -340,14 +341,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DestroyWindow(hWnd);
 			break;
 		case ID_BUTTON_Podzialka_plus:
+			skalax--; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Podzialka_minus:
+			skalax++; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Amplituda_plus:
-			skala--;  repaintWindow(hWnd, hdc, ps, &drawArea1);
+			skalay--;  repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Amplituda_minus:
-			skala++; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			skalay++; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_x_wlacz:
 			rysujx = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
