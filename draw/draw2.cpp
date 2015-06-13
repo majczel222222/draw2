@@ -19,7 +19,7 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 INT value;
 INT skalay = 10;
-INT skalax = 3;
+INT skalax = 2;
 
 bool rysujx = false, rysujy = false, rysujz = false, rysujg = false;
 
@@ -118,18 +118,23 @@ void MyOnPaint(HDC hdc)
 	//};
 	//	graphics.DrawLine(&pen2, data[wykres - 1].X, data[value - 1].Y, data[wykres].X, data[value].Y);
 
-	graphics.DrawLine(&pen, 0, 280, 768, 280);
-	graphics.DrawLine(&pen, 0, 380, 768, 380);
-	graphics.DrawLine(&pen, 0, 480, 768, 480);
-	graphics.DrawLine(&pen, 0, 580, 768, 580);
+	graphics.DrawLine(&pen, 30, 280, 820, 280);
+	graphics.DrawLine(&pen, 30, 220, 30, 340);
+	graphics.DrawLine(&pen, 26, 224, 30, 220);
+	graphics.DrawLine(&pen, 30, 220, 34, 224);
+	graphics.DrawLine(&pen, 816, 276, 820, 280);
+	graphics.DrawLine(&pen, 820, 280, 816, 284);
+	//graphics.DrawLine(&pen, 30, 380, 768, 380);
+	//graphics.DrawLine(&pen, 30, 480, 768, 480);
+	//graphics.DrawLine(&pen, 30, 580, 768, 580);
 
 	for (int i = 1; i < 2300; i++)
 	{
 
-		if (rysujx) graphics.DrawLine(&pen_1, (i - 1) / skalax, 280 - (data_x[i - 1] / skalay), i / skalax, 280 - (data_x[i] / skalay));
-		if (rysujy) graphics.DrawLine(&pen_2, (i - 1) / skalax, 280 - (data_y[i - 1] / skalay), i / skalax, 280 - (data_y[i] / skalay));
-		if (rysujz) graphics.DrawLine(&pen_3, (i - 1) / skalax, 280 - (data_z[i - 1] / skalay), i / skalax, 280 - (data_z[i] / skalay));
-		if (rysujg) graphics.DrawLine(&pen_4, (i - 1) / skalax, 280 - (data_g[i - 1] / skalay), i / skalax, 280 - (data_g[i] / skalay));
+		if (rysujx) graphics.DrawLine(&pen_1, 30 + ((i - 1) / skalax), 280 - (data_x[i - 1] / skalay), 30 + (i / skalax), 280 - (data_x[i] / skalay));
+		if (rysujy) graphics.DrawLine(&pen_2, 30 + ((i - 1) / skalax), 280 - (data_y[i - 1] / skalay), 30 + (i / skalax), 280 - (data_y[i] / skalay));
+		if (rysujz) graphics.DrawLine(&pen_3, 30 + ((i - 1) / skalax), 280 - (data_z[i - 1] / skalay), 30 + (i / skalax), 280 - (data_z[i] / skalay));
+		if (rysujg) graphics.DrawLine(&pen_4, 30 + ((i - 1) / skalax), 280 - (data_g[i - 1] / skalay), 30 + (i / skalax), 280 - (data_g[i] / skalay));
 	}
 
 
@@ -341,13 +346,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DestroyWindow(hWnd);
 			break;
 		case ID_BUTTON_Podzialka_plus:
-			if (skalax > 1) skalax--; else skalax = 2; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			if (skalax > 1) skalax--; else; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Podzialka_minus:
 			skalax++; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Amplituda_plus:
-			if (skalay > 1) skalax--; else skalay = 2;  repaintWindow(hWnd, hdc, ps, &drawArea1);
+			if (skalay > 1) skalax--; else;  repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Amplituda_minus:
 			skalay++; repaintWindow(hWnd, hdc, ps, &drawArea1);
