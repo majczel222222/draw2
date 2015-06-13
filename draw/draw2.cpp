@@ -126,10 +126,10 @@ void MyOnPaint(HDC hdc)
 	for (int i = 1; i < 2304; i++)
 	{
 
-		if (rysujx) graphics.DrawLine(&pen_1, (i - 1) / skalax, 280 - data_x[i - 1] / skalay, i / skalax, 280 - data_x[i] / skalay);
-		if (rysujy) graphics.DrawLine(&pen_2, (i - 1) / skalax, 316 - data_y[i - 1] / skalay, i / skalax, 316 - data_y[i] / skalay);
-		if (rysujz) graphics.DrawLine(&pen_3, (i - 1) / skalax, 404 - data_z[i - 1] / skalay, i / skalax, 404 - data_z[i] / skalay);
-		if (rysujg) graphics.DrawLine(&pen_4, (i - 1) / skalax, 504 - data_g[i - 1] / skalay, i / skalax, 504 - data_g[i] / skalay);
+		if (rysujx) graphics.DrawLine(&pen_1, (i - 1) / skalax, 280 - (data_x[i - 1] / skalay), i / skalax, 280 - (data_x[i] / skalay));
+		if (rysujy) graphics.DrawLine(&pen_2, (i - 1) / skalax, 316 - (data_y[i - 1] / skalay), i / skalax, 316 - (data_y[i] / skalay));
+		if (rysujz) graphics.DrawLine(&pen_3, (i - 1) / skalax, 404 - (data_z[i - 1] / skalay), i / skalax, 404 - (data_z[i] / skalay));
+		if (rysujg) graphics.DrawLine(&pen_4, (i - 1) / skalax, 504 - (data_g[i - 1] / skalay), i / skalax, 504 - (data_g[i] / skalay));
 	}
 
 
@@ -371,10 +371,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			rysujz = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_G_wlacz:
-			rysujz = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysujg = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_G_wylacz:
-			rysujz = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysujg = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
