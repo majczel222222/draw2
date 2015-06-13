@@ -74,8 +74,11 @@ void inputData()
 		source_file >> a_x >> a_y >> a_z;
 
 		a_x = a_x *1000;
+		a_x = 280 - a_x;
 		a_y = a_y *1000;
+		a_y = 280 - a_y;
 		a_z = a_z *1000;
+		a_z = 280 - a_z;
 		g = sqrt((a_x)*(a_x)+(a_y)*(a_y)+(a_z)*(a_z));
 
 		getline(source_file, useless_data);
@@ -131,10 +134,10 @@ void MyOnPaint(HDC hdc)
 	for (int i = 1; i < 2300; i++)
 	{
 
-		if (rysujx) graphics.DrawLine(&pen_1, 30 + ((i - 1) / skalax), 280 - (data_x[i - 1] / skalay), 30 + (i / skalax), 280 - (data_x[i] / skalay));
-		if (rysujy) graphics.DrawLine(&pen_2, 30 + ((i - 1) / skalax), 280 - (data_y[i - 1] / skalay), 30 + (i / skalax), 280 - (data_y[i] / skalay));
-		if (rysujz) graphics.DrawLine(&pen_3, 30 + ((i - 1) / skalax), 280 - (data_z[i - 1] / skalay), 30 + (i / skalax), 280 - (data_z[i] / skalay));
-		if (rysujg) graphics.DrawLine(&pen_4, 30 + ((i - 1) / skalax), 280 - (data_g[i - 1] / skalay), 30 + (i / skalax), 280 - (data_g[i] / skalay));
+		if (rysujx) graphics.DrawLine(&pen_1, 30 + ((i - 1) / skalax), 280 + data_x[i - 1] / skalay, 30 + (i / skalax), 280 + data_x[i] / skalay);
+		if (rysujy) graphics.DrawLine(&pen_2, 30 + ((i - 1) / skalax), data_y[i - 1] / skalay, 30 + (i / skalax), data_y[i] / skalay);
+		if (rysujz) graphics.DrawLine(&pen_3, 30 + ((i - 1) / skalax), data_z[i - 1] / skalay, 30 + (i / skalax), data_z[i] / skalay);
+		if (rysujg) graphics.DrawLine(&pen_4, 30 + ((i - 1) / skalax), data_g[i - 1] / skalay, 30 + (i / skalax), data_g[i] / skalay);
 	}
 
 
@@ -346,13 +349,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DestroyWindow(hWnd);
 			break;
 		case ID_BUTTON_Podzialka_plus:
-			if (skalax > 1) skalax--; else; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			if (skalax >= 2) skalax--; else skalax = 1; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Podzialka_minus:
 			skalax++; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Amplituda_plus:
-			if (skalay > 1) skalax--; else;  repaintWindow(hWnd, hdc, ps, &drawArea1);
+			if (skalay >= 2) skalay--; else skalay = 1;  repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Amplituda_minus:
 			skalay++; repaintWindow(hWnd, hdc, ps, &drawArea1);
