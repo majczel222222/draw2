@@ -8,9 +8,14 @@
 #include <fstream>
 #include <string>
 #include <math.h>
+#include <sstream>
+#include <ctime>
+#include <Windows.h>
 
 #define MAX_LOADSTRING 100
 #define TMR_1 1
+
+using namespace std;
 
 // Global Variables:
 HINSTANCE hInst;								// current instance
@@ -19,9 +24,10 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 
 INT value;
 INT skalay = 10;
-INT skalax = 2;
+INT skalax = 3;
+int start_counter = 0, stop_counter = 0;
 
-bool rysujx = false, rysujy = false, rysujz = false, rysujg = false;
+bool rysuja_x = false, rysuja_y = false, rysuja_z = false, rysujg = false;
 
 // buttons
 HWND hwndButton;
@@ -30,6 +36,7 @@ std::vector<int> data_x;
 std::vector<int> data_y;
 std::vector<int> data_z;
 std::vector<int> data_g;
+std::vector<int> data_v_x, data_v_y, data_v_z;
 
 RECT drawArea1 = { 0, 0, 1400, 900 };
 RECT drawArea2;
@@ -42,13 +49,27 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	Buttons(HWND, UINT, WPARAM, LPARAM);
 
 
+/*void ruch_postoj()
+{
+
+	for (int i = 1; i < 2300; i++){
+		if (data_v_x[i] > data_v_x[i - 1] + 5 && data_v_y[i] > data_v_y[i - 1] + 5 && data_v_z[i] > data_v_z[i - 1] + 5)
+		{
+			start_counter++;
+		}
+		else
+		{
+			stop_counter++;
+		}
+	}
+}*/
 
 
 void inputData()
 {
 	std::ifstream source_file;
 
-	double a_x, a_y, a_z, g;
+	double a_x, a_y, a_z, g, variable_x, variable_y, variable_z;
 
 	std::string file_name = "outputRobotForwardB02.log";
 	std::string useless_data;
@@ -60,7 +81,7 @@ void inputData()
 		MessageBox(NULL, L"Nie mozna otworzyc pliku.", L"ERR", MB_ICONEXCLAMATION);
 	};
 
-	for (int j = 0; j < 2304; j++)
+	for (int j = 0; j < 2300; j++)
 	{
 		if (j == 0)
 		{
@@ -74,11 +95,8 @@ void inputData()
 		source_file >> a_x >> a_y >> a_z;
 
 		a_x = a_x *1000;
-		a_x = 280 - a_x;
 		a_y = a_y *1000;
-		a_y = 280 - a_y;
 		a_z = a_z *1000;
-		a_z = 280 - a_z;
 		g = sqrt((a_x)*(a_x)+(a_y)*(a_y)+(a_z)*(a_z));
 
 		getline(source_file, useless_data);
@@ -95,6 +113,60 @@ void inputData()
 
 	source_file.close();
 
+
+	variable_x = 0;
+	variable_y = 0;
+	variable_z = 0;
+
+	int var_x = 0, var_y = 0, var_z = 0;
+
+	for (int i = 0; i < 2300; i++)
+	{
+		var_x = data_x[i];
+
+		variable_x = variable_x + var_x * 0.25;
+
+		data_v_x.push_back(variable_x);
+		
+		var_y = data_y[i];
+
+		variable_y = variable_y + var_y * 0.25;
+
+		data_v_y.push_back(variable_y);
+
+		var_z = data_z[i];
+
+		variable_z = variable_z + var_z * 0.25;
+
+		data_v_z.push_back(variable_z);
+
+	}
+
+	for (int i = 1; i < 2300; i++){
+		if (data_v_x[i] > (data_v_x[i-1] + 1.25) && data_v_y[i] > (data_v_y[i-1] + 1.25) && data_v_z[i] > (data_v_z[i-1] + 1.25))
+		{
+			start_counter++;
+		}
+		else
+		{
+			stop_counter++;
+		}		
+	}
+	start_counter = start_counter / 4;
+	stop_counter = stop_counter / 4;
+
+}
+
+
+
+wchar_t* int_to_wchar_t(int i, string dodatek)
+{
+	string napis = to_string(i) + dodatek;
+	size_t newsize = napis.length() + 1;
+	wchar_t * wcstring = new wchar_t[newsize];
+	size_t convertedChars = 0;
+	mbstowcs_s(&convertedChars, wcstring, newsize, napis.c_str(), _TRUNCATE);
+	return wcstring;
 }
 
 void MyOnPaint(HDC hdc)
@@ -121,12 +193,15 @@ void MyOnPaint(HDC hdc)
 	//};
 	//	graphics.DrawLine(&pen2, data[wykres - 1].X, data[value - 1].Y, data[wykres].X, data[value].Y);
 
-	graphics.DrawLine(&pen, 30, 280, 820, 280);
-	graphics.DrawLine(&pen, 30, 220, 30, 340);
-	graphics.DrawLine(&pen, 26, 224, 30, 220);
-	graphics.DrawLine(&pen, 30, 220, 34, 224);
-	graphics.DrawLine(&pen, 816, 276, 820, 280);
-	graphics.DrawLine(&pen, 820, 280, 816, 284);
+	graphics.DrawLine(&pen, 50, 280, 840, 280);
+	graphics.DrawLine(&pen, 50, 80, 50, 440);
+	graphics.DrawLine(&pen, 46, 84, 50, 80);
+	graphics.DrawLine(&pen, 50, 80, 54, 84);
+	graphics.DrawLine(&pen, 836, 276, 840, 280);
+	graphics.DrawLine(&pen, 840, 280, 836, 284);
+	graphics.DrawLine(&pen, 48, 244 + 1000 / skalay, 52, 244 + 1000 / skalay);
+	graphics.DrawLine(&pen, 48, 254+1000/skalay, 52, 254+1000/skalay);
+	graphics.DrawLine(&pen, 48, 282 - 1000/skalay, 52, 282 - 1000/skalay);
 	//graphics.DrawLine(&pen, 30, 380, 768, 380);
 	//graphics.DrawLine(&pen, 30, 480, 768, 480);
 	//graphics.DrawLine(&pen, 30, 580, 768, 580);
@@ -134,10 +209,10 @@ void MyOnPaint(HDC hdc)
 	for (int i = 1; i < 2300; i++)
 	{
 
-		if (rysujx) graphics.DrawLine(&pen_1, 30 + ((i - 1) / skalax), 280 + data_x[i - 1] / skalay, 30 + (i / skalax), 280 + data_x[i] / skalay);
-		if (rysujy) graphics.DrawLine(&pen_2, 30 + ((i - 1) / skalax), data_y[i - 1] / skalay, 30 + (i / skalax), data_y[i] / skalay);
-		if (rysujz) graphics.DrawLine(&pen_3, 30 + ((i - 1) / skalax), data_z[i - 1] / skalay, 30 + (i / skalax), data_z[i] / skalay);
-		if (rysujg) graphics.DrawLine(&pen_4, 30 + ((i - 1) / skalax), data_g[i - 1] / skalay, 30 + (i / skalax), data_g[i] / skalay);
+		if (rysuja_x) graphics.DrawLine(&pen_1, 50 + ((i - 1) / skalax), 280 - data_x[i - 1] / skalay, 50 + (i / skalax), 280 - data_x[i] / skalay);
+		if (rysuja_y) graphics.DrawLine(&pen_2, 50 + ((i - 1) / skalax), 280 - data_y[i - 1] / skalay, 50 + (i / skalax), 280 - data_y[i] / skalay);
+		if (rysuja_z) graphics.DrawLine(&pen_3, 50 + ((i - 1) / skalax), 280 - data_z[i - 1] / skalay, 50 + (i / skalax), 280 - data_z[i] / skalay);
+		if (rysujg) graphics.DrawLine(&pen_4, 50 + ((i - 1) / skalax), 280 - data_g[i - 1] / skalay, 50 + (i / skalax), 280 - data_g[i] / skalay);
 	}
 
 
@@ -158,6 +233,11 @@ void MyOnPaint(HDC hdc)
 
 	graphics.DrawString(L"G: ", -1, &text, PointF(900, 560), &text2);
 
+	graphics.DrawString(L"Czas trwania ruchu: ", -1, &text, PointF(260, 500), &text2);
+	graphics.DrawString(int_to_wchar_t(start_counter, " s"), -1, &text, PointF(560, 500), &text2);
+
+	graphics.DrawString(L"Czas trwania postoju: ", -1, &text, PointF(260, 550), &text2);
+	graphics.DrawString(int_to_wchar_t(stop_counter, " s"), -1, &text, PointF(560, 550), &text2);
 
 	//graphics.DrawLine(&pen, 0, 150, 401, 150);
 
@@ -361,22 +441,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			skalay++; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_x_wlacz:
-			rysujx = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysuja_x = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_x_wylacz:
-			rysujx = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysuja_x = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_y_wlacz:
-			rysujy = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysuja_y = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_y_wylacz:
-			rysujy = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysuja_y = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_z_wlacz:
-			rysujz = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysuja_z = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_Os_z_wylacz:
-			rysujz = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
+			rysuja_z = false; repaintWindow(hWnd, hdc, ps, &drawArea1);
 			break;
 		case ID_BUTTON_G_wlacz:
 			rysujg = true; repaintWindow(hWnd, hdc, ps, &drawArea1);
