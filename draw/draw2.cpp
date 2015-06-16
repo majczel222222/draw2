@@ -4,12 +4,8 @@
 #include "stdafx.h"
 #include "draw2.h"
 #include <vector>
-#include <cstdio>
 #include <fstream>
 #include <string>
-#include <math.h>
-#include <sstream>
-#include <ctime>
 #include <Windows.h>
 
 #define MAX_LOADSTRING 100
@@ -49,20 +45,6 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	Buttons(HWND, UINT, WPARAM, LPARAM);
 
 
-/*void ruch_postoj()
-{
-
-	for (int i = 1; i < 2300; i++){
-		if (data_v_x[i] > data_v_x[i - 1] + 5 && data_v_y[i] > data_v_y[i - 1] + 5 && data_v_z[i] > data_v_z[i - 1] + 5)
-		{
-			start_counter++;
-		}
-		else
-		{
-			stop_counter++;
-		}
-	}
-}*/
 
 
 void inputData()
@@ -124,26 +106,26 @@ void inputData()
 	{
 		var_x = data_x[i];
 
-		variable_x = variable_x + var_x * 0.25;
+		variable_x = variable_x + var_x * 0.04;
 
 		data_v_x.push_back(variable_x);
 		
 		var_y = data_y[i];
 
-		variable_y = variable_y + var_y * 0.25;
+		variable_y = variable_y + var_y * 0.04;
 
 		data_v_y.push_back(variable_y);
 
 		var_z = data_z[i];
 
-		variable_z = variable_z + var_z * 0.25;
+		variable_z = variable_z + var_z * 0.04;
 
 		data_v_z.push_back(variable_z);
 
 	}
 
 	for (int i = 1; i < 2300; i++){
-		if (data_v_x[i] > (data_v_x[i-1] + 1.25) && data_v_y[i] > (data_v_y[i-1] + 1.25) && data_v_z[i] > (data_v_z[i-1] + 1.25))
+		if (data_v_x[i] > data_v_x[i-1] + 0.2 || data_v_y[i] > data_v_y[i-1] + 0.2 || data_v_z[i] > data_v_z[i-1]+ 0.2)
 		{
 			start_counter++;
 		}
@@ -180,18 +162,10 @@ void MyOnPaint(HDC hdc)
 	Pen pen_4(Color(255, 255, 0, 255), 1);
 
 	Font text(&FontFamily(L"Arial"), 20);
+	Font text3(&FontFamily(L"Arial"), 10);
 
 	SolidBrush text2(Color(255, 0, 0, 255));
-	//graphics.DrawRectangle(&pen, 50 + value, 400, 10, 20);
 
-
-	//for (int i = 1, j = value; i < wykres; i++, j++)
-	//{
-	//	k = 2 * (value - wykres);
-	//
-	//	graphics.DrawLine(&pen2, data[i - 1].X - k, data[j - 1].Y, data[i].X - k , data[j].Y);
-	//};
-	//	graphics.DrawLine(&pen2, data[wykres - 1].X, data[value - 1].Y, data[wykres].X, data[value].Y);
 
 	graphics.DrawLine(&pen, 50, 280, 840, 280);
 	graphics.DrawLine(&pen, 50, 80, 50, 440);
@@ -199,12 +173,20 @@ void MyOnPaint(HDC hdc)
 	graphics.DrawLine(&pen, 50, 80, 54, 84);
 	graphics.DrawLine(&pen, 836, 276, 840, 280);
 	graphics.DrawLine(&pen, 840, 280, 836, 284);
-	graphics.DrawLine(&pen, 48, 244 + 1000 / skalay, 52, 244 + 1000 / skalay);
-	graphics.DrawLine(&pen, 48, 254+1000/skalay, 52, 254+1000/skalay);
-	graphics.DrawLine(&pen, 48, 282 - 1000/skalay, 52, 282 - 1000/skalay);
-	//graphics.DrawLine(&pen, 30, 380, 768, 380);
-	//graphics.DrawLine(&pen, 30, 480, 768, 480);
-	//graphics.DrawLine(&pen, 30, 580, 768, 580);
+	graphics.DrawLine(&pen, 46, 244 + 1000 / skalay, 54, 244 + 1000 / skalay);
+	graphics.DrawLine(&pen, 46, 255 + 1000 / skalay, 54, 255 + 1000 / skalay);
+	graphics.DrawLine(&pen, 46, 282 - 1000/skalay, 54, 282 - 1000/skalay);
+	graphics.DrawLine(&pen, 816, 276, 816, 284);
+	graphics.DrawLine(&pen, 408 , 276, 408 , 284);
+
+	
+	graphics.DrawString(L"0", -1, &text3, PointF(32, 273), &text2);
+	graphics.DrawString(L"-0,644", -1, &text3, PointF(5, 236 + 1000/skalay), &text2);
+	graphics.DrawString(L"-0,756", -1, &text3, PointF(5, 250 + 1000 / skalay), &text2);
+	graphics.DrawString(L"0,98", -1, &text3, PointF(15, 274 - 1000 / skalay), &text2);
+	graphics.DrawString(L"2300", -1, &text3, PointF(800, 292 ), &text2);
+	graphics.DrawString(L"1115", -1, &text3, PointF(391, 292), &text2);
+
 
 	for (int i = 1; i < 2300; i++)
 	{
@@ -216,10 +198,7 @@ void MyOnPaint(HDC hdc)
 	}
 
 
-	//	for (int i = 1; i < wykres; i++)
-	//	{
-	//		graphics.DrawLine(&pen2, data[i - 1].X, data[i - 1].Y, data[i].X, data[i].Y);
-	//	};
+
 
 	graphics.DrawString(L"Podzialka czasowa: ", -1, &text, PointF(900, 60), &text2);
 
@@ -239,7 +218,6 @@ void MyOnPaint(HDC hdc)
 	graphics.DrawString(L"Czas trwania postoju: ", -1, &text, PointF(260, 550), &text2);
 	graphics.DrawString(int_to_wchar_t(stop_counter, " s"), -1, &text, PointF(560, 550), &text2);
 
-	//graphics.DrawLine(&pen, 0, 150, 401, 150);
 
 }
 
